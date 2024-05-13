@@ -1,0 +1,85 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Role{
+  id            Int           @id @default(autoincrement())
+  name          String 
+  users         User[]
+  createadAt    DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+}
+
+model User {
+  id            Int               @id @default(autoincrement())
+  name          String 
+  username      String            @unique 
+  roleId        Int 
+  profile       String 
+  address       String 
+  city          String 
+  phone         String 
+  email         String 
+  password      String 
+  certificates  Certificate[]
+  enrollments   Enrollment[]
+  role          Role              @relation(fields:[roleId] , references: [id])  
+  createadAt    DateTime          @default(now())
+  updatedAt     DateTime      @updatedAt
+}
+
+model Course {
+  id                Int           @id @default(autoincrement())
+  title             String 
+  description       String
+  courseDuration    Int
+  coursePrice       BigInt
+  enrollments       Enrollment[]
+  lessons           Lesson[]
+  createadAt        DateTime        @default(now())
+  updatedAt     DateTime      @updatedAt        
+}
+
+model Lesson {
+  id              Int @id @default(autoincrement())
+  courseId        Int 
+  lessonTitle     String
+  lessonContent   String 
+  lessonDate      DateTime
+  course          Course @relation(fields:[courseId] , references: [id])
+  createadAt      DateTime @default(now())
+  updatedAt     DateTime      @updatedAt
+
+}
+
+model Enrollment {
+  id              Int @id @default(autoincrement())
+  userId          Int 
+  courseId        Int 
+  enrollmentDate  DateTime
+  course          Course @relation(fields:[courseId] , references: [id])
+  user            User @relation(fields:[userId] , references: [id] )
+  createadAt      DateTime @default(now())
+  updatedAt     DateTime      @updatedAt
+
+}
+
+model Certificate {
+  id             Int @id @default(autoincrement())
+  userId         Int 
+  file           String 
+  user           User @relation(fields:[userId] , references: [id] )
+  createadAt     DateTime @default(now())
+ 
+}
